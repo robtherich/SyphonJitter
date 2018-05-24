@@ -31,6 +31,7 @@
 #include "jit.gl.h"
 #include "jit.gl.ob3d.h"
 #include "ext_obex.h"
+#include "ext_preferences.h"
 
 #import <Cocoa/Cocoa.h>
 #import <Syphon/Syphon.h>
@@ -55,6 +56,8 @@ typedef struct _jit_gl_syphon_server
 	
 	// Need our syphon instance here.
 	SyphonServer* syServer;
+	
+	BOOL 				isGL3;
 	
 } t_jit_gl_syphon_server;
 
@@ -212,6 +215,8 @@ t_jit_gl_syphon_server *jit_gl_syphon_server_new(t_symbol * dest_name)
 			jit_object_error((t_object *)jit_gl_syphon_server_instance,"jit.gl.syphonserver: could not create texture");
 			jit_gl_syphon_server_instance->textureSource = _jit_sym_nothing;		
 		}
+		
+		jit_gl_syphon_server_instance->isGL3 = (preferences_getsym("glversion") == gensym("gl3"));
 	} 
 	else 
 	{
@@ -245,56 +250,35 @@ void jit_gl_syphon_server_free(t_jit_gl_syphon_server *jit_gl_syphon_server_inst
 
 t_jit_err jit_gl_syphon_server_dest_closing(t_jit_gl_syphon_server *jit_gl_syphon_server_instance)
 {
+	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
+	if(jit_gl_syphon_server_instance->syServer)
+	{
+		//post("Removing Server");
+		[jit_gl_syphon_server_instance->syServer release];
+		jit_gl_syphon_server_instance->syServer = nil;
+	}
+	[pool drain];
 	return JIT_ERR_NONE;
 }
 
 t_jit_err jit_gl_syphon_server_dest_changed(t_jit_gl_syphon_server *jit_gl_syphon_server_instance)
-{	
-	//post("Destination Changed");
+{
+	return JIT_ERR_NONE;
+}
+
+t_jit_err jit_gl_syphon_server_init_syphon(t_jit_gl_syphon_server *jit_gl_syphon_server_instance)
+{
+	// check to ensure we actally have a fucking name as an attribute, otherwise, give it a @""
+	NSString* name = @"";
+	if(jit_gl_syphon_server_instance->servername)
+		name = [NSString stringWithCString:jit_gl_syphon_server_instance->servername->s_name encoding:NSASCIIStringEncoding];
 	
-	// try and find a context.
-	t_jit_gl_context jit_ctx = 0;
-
-	//post("Getting Context");
-
-	// jitter context
-	jit_ctx = jit_gl_get_context();
-
-	//post("Got Context");
-
-	if(jit_ctx)
-	{
-		//post("Have Context");
-		
-		NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
-
-		if(jit_gl_syphon_server_instance->syServer)
-        {
-			//post("Removing Server");
-			
-            [jit_gl_syphon_server_instance->syServer release];
-            jit_gl_syphon_server_instance->syServer = nil;
-		}
-        
-		//post("Creating Server");
-		
-		// check to ensure we actally have a fucking name as an attribute, otherwise, give it a @""
-		NSString* name = @"";
-		if(jit_gl_syphon_server_instance->servername)
-			name = [NSString stringWithCString:jit_gl_syphon_server_instance->servername->s_name encoding:NSASCIIStringEncoding];
-		
-		jit_gl_syphon_server_instance->syServer = [[SyphonServer alloc] initWithName:name
-                                                                             context:CGLGetCurrentContext()
-                                                                             options:nil];
-        
-		[pool drain];
-		
-		if (jit_gl_syphon_server_instance->texture)
-			jit_attr_setsym(jit_gl_syphon_server_instance->texture,ps_drawto,jit_attr_getsym(jit_gl_syphon_server_instance,ps_drawto));	
-	}
-	else {
-		post("No OpenGL context detected");
-	}
+	jit_gl_syphon_server_instance->syServer = [[SyphonServer alloc] initWithName:name
+																		 context:CGLGetCurrentContext()
+																		 options:nil];
+	
+	if (jit_gl_syphon_server_instance->texture)
+		jit_attr_setsym(jit_gl_syphon_server_instance->texture,ps_drawto,jit_attr_getsym(jit_gl_syphon_server_instance,ps_drawto));
 	
 	if(jit_gl_syphon_server_instance->syServer == nil)
 	{
@@ -361,17 +345,25 @@ t_jit_err jit_gl_syphon_server_draw(t_jit_gl_syphon_server *jit_gl_syphon_server
 	if (!jit_gl_syphon_server_instance)
 		return JIT_ERR_INVALID_PTR;
 
+	if(!jit_gl_syphon_server_instance->syServer)
+	{
+		t_jit_err err = jit_gl_syphon_server_init_syphon(jit_gl_syphon_server_instance);
+		if(err)
+			return err;
+	}
+	
 	if(jit_gl_syphon_server_instance->textureSource)
 	{
-		// cache/restore context in case in capture mode
-		
-		// TODO: necessary ? JKC says no unless context changed above? should be set during draw for you. 		
-		t_jit_gl_context ctx = jit_gl_get_context();
-		jit_ob3d_set_context(jit_gl_syphon_server_instance);
-		
 		// get our latest texture info.
 		t_jit_object *texture = (t_jit_object*)jit_object_findregistered(jit_gl_syphon_server_instance->textureSource);
-					
+		BOOL sourceIsMatrix = (jit_gl_syphon_server_instance->textureSource == jit_attr_getsym(jit_gl_syphon_server_instance->texture, _jit_sym_name));
+		
+		if(sourceIsMatrix && jit_gl_syphon_server_instance->isGL3)
+		{
+			jit_object_method_typed(texture, gensym("bind"), 0, NULL, NULL);
+			jit_object_method_typed(texture, gensym("unbind"), 0, NULL, NULL);
+		}
+		
 		GLuint texName = jit_attr_getlong(texture,ps_glid);
 		GLuint width = jit_attr_getlong(texture,ps_width);
 		GLuint height = jit_attr_getlong(texture,ps_height);
@@ -398,8 +390,6 @@ t_jit_err jit_gl_syphon_server_draw(t_jit_gl_syphon_server *jit_gl_syphon_server
 				[pool drain];
 			}
 		}
-		
-		jit_gl_set_context(ctx);
 	}
 	else
 	{

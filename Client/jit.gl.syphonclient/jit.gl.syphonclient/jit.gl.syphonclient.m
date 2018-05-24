@@ -256,7 +256,7 @@ t_jit_gl_syphon_client *jit_gl_syphon_client_new(t_symbol * dest_name)
 		
 		// create and attach ob3d
 		jit_ob3d_new(jit_gl_syphon_client_instance, dest_name);
-        jit_gl_syphon_client_instance->syClient = [[SyphonNameboundClient alloc] initWithContext:CGLGetCurrentContext()];
+		jit_gl_syphon_client_instance->syClient = nil;
 		
 		jit_gl_syphon_client_instance->geometry = NULL;
 		jit_gl_syphon_client_instance->ext_tex = NULL;
@@ -318,6 +318,9 @@ t_jit_err jit_gl_syphon_client_dest_changed(t_jit_gl_syphon_client *jit_gl_sypho
 			jit_object_free(jit_gl_syphon_client_instance->ext_tex);
 		jit_gl_syphon_client_instance->ext_tex = NULL;
 	}
+	
+	[jit_gl_syphon_client_instance->syClient release];
+	jit_gl_syphon_client_instance->syClient = nil;
 	
 	jit_gl_syphon_client_instance->needsRedraw = YES;
 	
@@ -492,7 +495,7 @@ void jit_gl_syphon_client_draw_gl3(t_jit_gl_syphon_client *syphon, t_atom_long *
 {
 	void *state = jit_ob3d_state_get((t_jit_object*)syphon);
 	if(!syphon->geometry) {
-		syphon->geometry = jit_gl_fs_quad_getgeometry(0);
+		syphon->geometry = jit_gl_fs_quad_getgeometry(1);
 	}
 	if(!syphon->ext_tex) {
 		syphon->ext_tex = new_external_texture(syphon);
@@ -521,6 +524,10 @@ t_jit_err jit_gl_syphon_client_draw(t_jit_gl_syphon_client *jit_gl_syphon_client
 		return JIT_ERR_INVALID_PTR;		
 
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
+	
+	if(!jit_gl_syphon_client_instance->syClient) {
+		jit_gl_syphon_client_instance->syClient = [[SyphonNameboundClient alloc] initWithContext:CGLGetCurrentContext()];
+	}
 	
 	// if we have a client and a frame, render to our internal texture.
 	[jit_gl_syphon_client_instance->syClient lockClient];
