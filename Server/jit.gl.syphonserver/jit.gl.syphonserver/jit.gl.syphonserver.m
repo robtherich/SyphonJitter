@@ -216,7 +216,7 @@ t_jit_gl_syphon_server *jit_gl_syphon_server_new(t_symbol * dest_name)
 			jit_gl_syphon_server_instance->textureSource = _jit_sym_nothing;		
 		}
 		
-		jit_gl_syphon_server_instance->isGL3 = (preferences_getsym("glversion") == gensym("gl3"));
+		jit_gl_syphon_server_instance->isGL3 = (preferences_getsym("glengine") == gensym("gl3"));
 	} 
 	else 
 	{

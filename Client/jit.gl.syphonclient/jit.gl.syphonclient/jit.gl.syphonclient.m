@@ -219,7 +219,7 @@ t_jit_gl_syphon_client *jit_gl_syphon_client_new(t_symbol * dest_name)
 	// make jit object
 	if ((jit_gl_syphon_client_instance = (t_jit_gl_syphon_client *)jit_object_alloc(_jit_gl_syphon_client_class)))
 	{
-		jit_gl_syphon_client_instance->isGL3 = (preferences_getsym("glversion") == gensym("gl3"));
+		jit_gl_syphon_client_instance->isGL3 = (preferences_getsym("glengine") == gensym("gl3"));
 		
 		// TODO : is this right ? 
 		// set up attributes
