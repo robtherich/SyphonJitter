@@ -283,6 +283,7 @@
 				GCC_WARN_UNUSED_VARIABLE = NO;
 				GENERATE_PKGINFO_FILE = YES;
 				INSTALL_PATH = /;
+				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = jit.gl.syphonclient;
 				WRAPPER_EXTENSION = mxo;
 			};
@@ -300,6 +301,7 @@
 				GCC_MODEL_TUNING = G4;
 				GCC_VERSION = "";
 				INSTALL_PATH = /;
+				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = jit.gl.syphonclient;
 				WRAPPER_EXTENSION = mxo;
 			};
@@ -328,6 +330,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 				VALID_ARCHS = "i386 x86_64";
 			};
@@ -339,6 +342,7 @@
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "Build Custom Framework";
 			};
 			name = Debug;
@@ -348,6 +352,7 @@
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "Build Custom Framework";
 				ZERO_LINK = NO;
 			};

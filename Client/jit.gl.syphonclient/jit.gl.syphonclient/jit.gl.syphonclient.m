@@ -30,7 +30,10 @@
 #include "jit.common.h"
 #include "jit.gl.h"
 #include "jit.gl.ob3d.h"
+#include "jit.gl.draw.h"
+
 #include "ext_obex.h"
+#include "ext_preferences.h"
 
 #import <Cocoa/Cocoa.h>
 #import <Syphon/Syphon.h>
@@ -59,6 +62,10 @@ typedef struct _jit_gl_syphon_client
 
 	// internal jit.gl.texture object
 	t_jit_object *output;
+	
+	BOOL isGL3;
+	void *geometry;
+	t_jit_gl_texture_ex *ext_tex;
 	
 } t_jit_gl_syphon_client;
 
@@ -212,6 +219,8 @@ t_jit_gl_syphon_client *jit_gl_syphon_client_new(t_symbol * dest_name)
 	// make jit object
 	if ((jit_gl_syphon_client_instance = (t_jit_gl_syphon_client *)jit_object_alloc(_jit_gl_syphon_client_class)))
 	{
+		jit_gl_syphon_client_instance->isGL3 = (preferences_getsym("glengine") == gensym("gl3"));
+		
 		// TODO : is this right ? 
 		// set up attributes
 		jit_attr_setsym(jit_gl_syphon_client_instance->servername, _jit_sym_name, gensym("servername"));
@@ -247,7 +256,10 @@ t_jit_gl_syphon_client *jit_gl_syphon_client_new(t_symbol * dest_name)
 		
 		// create and attach ob3d
 		jit_ob3d_new(jit_gl_syphon_client_instance, dest_name);
-        jit_gl_syphon_client_instance->syClient = [[SyphonNameboundClient alloc] initWithContext:CGLGetCurrentContext()];
+		jit_gl_syphon_client_instance->syClient = nil;
+		
+		jit_gl_syphon_client_instance->geometry = NULL;
+		jit_gl_syphon_client_instance->ext_tex = NULL;
 	} 
 	else 
 	{
@@ -273,6 +285,10 @@ void jit_gl_syphon_client_free(t_jit_gl_syphon_client *jit_gl_syphon_client_inst
 	// free our internal texture
 	if(jit_gl_syphon_client_instance->output)
 		jit_object_free(jit_gl_syphon_client_instance->output);
+	if(jit_gl_syphon_client_instance->geometry)
+		jit_object_free(jit_gl_syphon_client_instance->geometry);
+	if(jit_gl_syphon_client_instance->ext_tex)
+		jit_object_free(jit_gl_syphon_client_instance->ext_tex);
 }
 
 t_jit_err jit_gl_syphon_client_dest_closing(t_jit_gl_syphon_client *jit_gl_syphon_client_instance)
@@ -294,7 +310,17 @@ t_jit_err jit_gl_syphon_client_dest_changed(t_jit_gl_syphon_client *jit_gl_sypho
 		jit_gl_drawinfo_setup(jit_gl_syphon_client_instance, &drawInfo);
 		jit_gl_bindtexture(&drawInfo, texName, 0);
 		jit_gl_unbindtexture(&drawInfo, texName, 0);
+		
+		if(jit_gl_syphon_client_instance->geometry)
+			jit_object_free(jit_gl_syphon_client_instance->geometry);
+		jit_gl_syphon_client_instance->geometry = NULL;
+		if(jit_gl_syphon_client_instance->ext_tex)
+			jit_object_free(jit_gl_syphon_client_instance->ext_tex);
+		jit_gl_syphon_client_instance->ext_tex = NULL;
 	}
+	
+	[jit_gl_syphon_client_instance->syClient release];
+	jit_gl_syphon_client_instance->syClient = nil;
 	
 	jit_gl_syphon_client_instance->needsRedraw = YES;
 	
@@ -312,12 +338,196 @@ t_jit_err jit_gl_syphon_client_drawto(t_jit_gl_syphon_client *jit_gl_syphon_clie
 	return JIT_ERR_NONE;
 }
 
+void jit_gl_syphon_client_draw_gl2(t_jit_gl_syphon_client *jit_gl_syphon_client_instance, long texid)
+{
+	// save some state
+	GLint previousFBO;	// make sure we pop out to the right FBO
+	GLint previousReadFBO;
+	GLint previousDrawFBO;
+	GLint previousMatrixMode;
+	
+	glGetIntegerv(GL_FRAMEBUFFER_BINDING_EXT, &previousFBO);
+	glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING_EXT, &previousReadFBO);
+	glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING_EXT, &previousDrawFBO);
+	glGetIntegerv(GL_MATRIX_MODE, &previousMatrixMode);
+	
+	// save texture state, client state, etc.
+	glPushAttrib(GL_ALL_ATTRIB_BITS);
+	glPushClientAttrib(GL_CLIENT_ALL_ATTRIB_BITS);
+	
+	// We are going to bind our FBO to our internal jit.gl.texture as COLOR_0 attachment
+	// We need the ID, width/height.
+	
+	GLuint texname = jit_attr_getlong(jit_gl_syphon_client_instance->output,ps_glid);
+	GLuint width = jit_attr_getlong(jit_gl_syphon_client_instance->output,ps_width);
+	GLuint height = jit_attr_getlong(jit_gl_syphon_client_instance->output,ps_height);
+	
+	//post("texture id is %u width %u height %u", texname, width, height);
+	
+	// FBO generation/attachment to texture
+	GLuint tempFBO;
+	glGenFramebuffers(1, &tempFBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, tempFBO);
+	
+	// TODO: check texture target and sset appropriately, dont assume rect
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_RECTANGLE_ARB, texname, 0);
+	
+	// it work?
+	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	if(status == GL_FRAMEBUFFER_COMPLETE)
+	{
+		//post("jit.gl.syphonclient  FBO complete");
+		
+		// Using replace blend mode, no need to clear?
+		//glClearColor(0.0, 0.0, 0.0, 0.0);
+		//glClear(GL_COLOR_BUFFER_BIT);
+		
+		glMatrixMode(GL_TEXTURE);
+		glPushMatrix();
+		glLoadIdentity();
+		
+		glViewport(0, 0,  width, height);
+		glMatrixMode(GL_PROJECTION);
+		
+		glPushMatrix();
+		glLoadIdentity();
+		
+		glOrtho(0.0, width,  0.0,  height, -1, 1);
+		
+		glMatrixMode(GL_MODELVIEW);
+		glPushMatrix();
+		glLoadIdentity();
+		
+		// render our syphon texture to our jit.gl.texture's texture.
+		glColor4f(1.0, 1.0, 1.0, 1.0);
+		
+		// Moved above.
+		//if ([client bindFrameTexture:cgl_ctx] != 0);
+		{
+			// Moved above
+			
+			// our frame size is only valid when we have a bound texture.
+			// We hope our frame size does not change every frame, since we are effectively a frame behind.
+			//jit_gl_syphon_client_instance->latestBounds.size = [client frameSize];
+			
+			// do not need blending if we use black border for alpha and replace env mode, saves a buffer wipe
+			// we can do this since our image draws over the complete surface of the FBO, no pixel goes untouched.
+			glActiveTexture(GL_TEXTURE0);
+			glClientActiveTexture(GL_TEXTURE0);
+			glEnable(GL_TEXTURE_RECTANGLE_EXT);
+			glBindTexture(GL_TEXTURE_RECTANGLE_EXT, texid);
+			
+			glDisable(GL_BLEND);
+			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+			
+			// move to VA for rendering
+			GLfloat tex_coords[] =
+			{
+				width,height,
+				0.0,height,
+				0.0,0.0,
+				width,0.0
+			};
+			
+			GLfloat verts[] =
+			{
+				width,height,
+				0.0,height,
+				0.0,0.0,
+				width,0.0
+			};
+			
+			glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+			glTexCoordPointer(2, GL_FLOAT, 0, tex_coords );
+			glEnableClientState(GL_VERTEX_ARRAY);
+			glVertexPointer(2, GL_FLOAT, 0, verts );
+			glDrawArrays( GL_TRIANGLE_FAN, 0, 4 );
+			glDisableClientState(GL_VERTEX_ARRAY);
+			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+		}
+		
+		glMatrixMode(GL_MODELVIEW);
+		glPopMatrix();
+		glMatrixMode(GL_PROJECTION);
+		glPopMatrix();
+		
+		glMatrixMode(GL_TEXTURE);
+		glPopMatrix();
+		
+		glMatrixMode(previousMatrixMode);
+		
+		// Is this needed?
+		//glFlushRenderAPPLE();
+	}
+	else
+	{
+		post("jit.gl.syphonclient could not attach to FBO");
+	}
+	
+	// clean up after ourselves
+	glDeleteFramebuffers(1, &tempFBO);
+	tempFBO = 0;
+	
+	glPopAttrib();
+	glPopClientAttrib();
+	
+	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, previousFBO);
+	glBindFramebufferEXT(GL_READ_FRAMEBUFFER_EXT, previousReadFBO);
+	glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER_EXT, previousDrawFBO);
+
+}
+
+t_jit_gl_texture_ex *new_external_texture(t_jit_gl_syphon_client *jit_gl_syphon_client_instance)
+{
+	t_jit_gl_texture_ex *tob = jit_object_new(gensym("jit_gl_texture_ex"));
+	tob->pob = jit_gl_syphon_client_instance;
+	tob->id = -1;
+	tob->target = GL_TEXTURE_RECTANGLE_EXT;
+	tob->dim[0] = 1;
+	tob->dim[1] = 1;
+	tob->dim[2] = 1;
+	tob->rectangle = 1;
+	tob->name = jit_symbol_unique();
+	return tob;
+}
+
+void jit_gl_syphon_client_draw_gl3(t_jit_gl_syphon_client *syphon, t_atom_long *dim, long texid)
+{
+	void *state = jit_ob3d_state_get((t_jit_object*)syphon);
+	if(!syphon->geometry) {
+		syphon->geometry = jit_gl_fs_quad_getgeometry(1);
+	}
+	if(!syphon->ext_tex) {
+		syphon->ext_tex = new_external_texture(syphon);
+	}
+	syphon->ext_tex->id = texid;
+	syphon->ext_tex->dim[0] = dim[0];
+	syphon->ext_tex->dim[1] = dim[1];
+	
+	jit_object_method_typed(syphon->output, gensym("begin_capture"), 0, NULL, NULL);
+	
+	jit_gl_state_bind_texture(state, 0, syphon->ext_tex);
+	jit_object_method(syphon->ext_tex, gensym("set_transform"), state, 0);
+	
+	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_BLEND);
+	
+	jit_gl_fs_quad_draw(syphon->geometry, state, dim[0], dim[1]);
+	jit_gl_state_unbind_texture(state, 0, syphon->ext_tex);
+	
+	jit_object_method_typed(syphon->output, gensym("end_capture"), 0, NULL, NULL);
+}
+
 t_jit_err jit_gl_syphon_client_draw(t_jit_gl_syphon_client *jit_gl_syphon_client_instance)
 {
 	if (!jit_gl_syphon_client_instance)
 		return JIT_ERR_INVALID_PTR;		
 
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
+	
+	if(!jit_gl_syphon_client_instance->syClient) {
+		jit_gl_syphon_client_instance->syClient = [[SyphonNameboundClient alloc] initWithContext:CGLGetCurrentContext()];
+	}
 	
 	// if we have a client and a frame, render to our internal texture.
 	[jit_gl_syphon_client_instance->syClient lockClient];
@@ -335,11 +545,6 @@ t_jit_err jit_gl_syphon_client_draw(t_jit_gl_syphon_client *jit_gl_syphon_client
 		if(jit_gl_syphon_client_instance->output && frame)
 		{
 			jit_gl_syphon_client_instance->needsRedraw = NO;
-
-			// cache/restore context in case in capture mode
-			// TODO: necessary ? JKC says no unless context changed above? should be set during draw for you. 
-			t_jit_gl_context ctx = jit_gl_get_context();
-			jit_ob3d_set_context(jit_gl_syphon_client_instance);
 			
 			// add texture to OB3D list.
 			jit_attr_setsym(jit_gl_syphon_client_instance,ps_texture, jit_attr_getsym(jit_gl_syphon_client_instance->output, gensym("name")));
@@ -358,141 +563,12 @@ t_jit_err jit_gl_syphon_client_draw(t_jit_gl_syphon_client *jit_gl_syphon_client
             // update our internal attribute so attr messages work
 			jit_attr_setlong_array(jit_gl_syphon_client_instance, _jit_sym_dim, 2, newdim);
 
-			// save some state
-			GLint previousFBO;	// make sure we pop out to the right FBO
-			GLint previousReadFBO;
-			GLint previousDrawFBO;
-			GLint previousMatrixMode;
-			
-			glGetIntegerv(GL_FRAMEBUFFER_BINDING_EXT, &previousFBO);
-			glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING_EXT, &previousReadFBO);
-			glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING_EXT, &previousDrawFBO);
-			glGetIntegerv(GL_MATRIX_MODE, &previousMatrixMode);
-			
-			// save texture state, client state, etc.
-			glPushAttrib(GL_ALL_ATTRIB_BITS);
-			glPushClientAttrib(GL_CLIENT_ALL_ATTRIB_BITS);
-
-			// We are going to bind our FBO to our internal jit.gl.texture as COLOR_0 attachment
-			// We need the ID, width/height.
-			
-			GLuint texname = jit_attr_getlong(jit_gl_syphon_client_instance->output,ps_glid);
-			GLuint width = jit_attr_getlong(jit_gl_syphon_client_instance->output,ps_width);
-			GLuint height = jit_attr_getlong(jit_gl_syphon_client_instance->output,ps_height);
-
-			//post("texture id is %u width %u height %u", texname, width, height);
-			
-			// FBO generation/attachment to texture
-			GLuint tempFBO;
-			glGenFramebuffers(1, &tempFBO);
-			glBindFramebuffer(GL_FRAMEBUFFER, tempFBO);
-			
-			// TODO: check texture target and sset appropriately, dont assume rect
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_RECTANGLE_ARB, texname, 0);
-			
-			// it work?
-			GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-			if(status == GL_FRAMEBUFFER_COMPLETE)
-			{
-				//post("jit.gl.syphonclient  FBO complete");
-
-				// Using replace blend mode, no need to clear?
-				//glClearColor(0.0, 0.0, 0.0, 0.0);
-				//glClear(GL_COLOR_BUFFER_BIT);				
-				
-				glMatrixMode(GL_TEXTURE);
-				glPushMatrix();
-				glLoadIdentity();
-				
-				glViewport(0, 0,  width, height);
-				glMatrixMode(GL_PROJECTION);
-				glPushMatrix();
-				glLoadIdentity();
-				
-				glOrtho(0.0, width,  0.0,  height, -1, 1);		
-				
-				glMatrixMode(GL_MODELVIEW);
-				glPushMatrix();
-				glLoadIdentity();
-				
-				// render our syphon texture to our jit.gl.texture's texture.
-				glColor4f(1.0, 1.0, 1.0, 1.0);
-								
-                // Moved above.
-				//if ([client bindFrameTexture:cgl_ctx] != 0);
-				{
-                    // Moved above
-                    
-					// our frame size is only valid when we have a bound texture. 
-					// We hope our frame size does not change every frame, since we are effectively a frame behind.
-					//jit_gl_syphon_client_instance->latestBounds.size = [client frameSize];
-					
-					// do not need blending if we use black border for alpha and replace env mode, saves a buffer wipe
-					// we can do this since our image draws over the complete surface of the FBO, no pixel goes untouched.
-					glActiveTexture(GL_TEXTURE0);
-                    glClientActiveTexture(GL_TEXTURE0);
-					glEnable(GL_TEXTURE_RECTANGLE_EXT);
-                    glBindTexture(GL_TEXTURE_RECTANGLE_EXT, [frame textureName]);
-                    
-					glDisable(GL_BLEND);
-					glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);	
-					
-					// move to VA for rendering
-					GLfloat tex_coords[] = 
-					{
-						width,height,
-						0.0,height,
-						0.0,0.0,
-						width,0.0
-					};
-					
-					GLfloat verts[] = 
-					{
-						width,height,
-						0.0,height,
-						0.0,0.0,
-						width,0.0
-					};
-					
-					glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-					glTexCoordPointer(2, GL_FLOAT, 0, tex_coords );
-					glEnableClientState(GL_VERTEX_ARRAY);		
-					glVertexPointer(2, GL_FLOAT, 0, verts );
-					glDrawArrays( GL_TRIANGLE_FAN, 0, 4 );
-					glDisableClientState(GL_VERTEX_ARRAY);
-					glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-				}
-				
-				glMatrixMode(GL_MODELVIEW);
-				glPopMatrix();
-				glMatrixMode(GL_PROJECTION);
-				glPopMatrix();
-
-				glMatrixMode(GL_TEXTURE);
-				glPopMatrix();
-
-				glMatrixMode(previousMatrixMode);
-				
-				// Is this needed? 
-				//glFlushRenderAPPLE();	
+			if(jit_gl_syphon_client_instance->isGL3) {
+				jit_gl_syphon_client_draw_gl3(jit_gl_syphon_client_instance, newdim, [frame textureName]);
 			}
-			else 
-			{
-				post("jit.gl.syphonclient could not attach to FBO");
-			}
-            
-            // clean up after ourselves
-            glDeleteFramebuffers(1, &tempFBO);
-            tempFBO = 0;
-			
-			glPopAttrib();
-			glPopClientAttrib();			
-			
-			glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, previousFBO);	
-			glBindFramebufferEXT(GL_READ_FRAMEBUFFER_EXT, previousReadFBO);
-			glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER_EXT, previousDrawFBO);			
-            
-			jit_gl_set_context(ctx);
+			else {
+				jit_gl_syphon_client_draw_gl2(jit_gl_syphon_client_instance, [frame textureName]);
+            }
 		}
         
         [frame release];

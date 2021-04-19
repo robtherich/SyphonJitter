@@ -1,0 +1,37 @@
+{
+	"author" : "Tom Butterworth, Anton Marini",
+	"authors" : [  ],
+	"description" : "Jitter externals for sharing OpenGL textures with Syphon enabled applications. Mac only, for similar functionality on Windows, check out the Spout package.",
+	"displayname" : "",
+	"extends" : "",
+	"extensible" : 0,
+	"homepatcher" : null,
+	"max_version_max" : "none",
+	"max_version_min" : "8.0",
+	"name" : "Syphon",
+	"os" : 	{
+		"macintosh" : 		{
+			"platform" : [ "x64" ],
+			"min_version" : "10.7.x"
+		}
+,
+		"windows" : 		{
+			"platform" : [  ],
+			"min_version" : "none"
+		}
+
+	}
+,
+	"package_extra" : 	{
+
+	}
+,
+	"tags" : [ "jitter", "video", "graphics", "opengl", "externals" ],
+	"version" : "1.0.5",
+	"website" : "http://syphon.v002.info",
+	"filelist" : 	{
+		"externals" : [ "jit.gl.syphonclient.mxo", "jit.gl.syphonserver.mxo" ],
+		"help" : [ "jit.gl.syphonclient.maxhelp", "jit.gl.syphonserver.maxhelp" ]
+	}
+
+}
