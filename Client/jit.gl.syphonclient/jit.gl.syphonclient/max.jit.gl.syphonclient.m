@@ -61,62 +61,46 @@ t_symbol *ps_jit_gl_texture,*ps_draw,*ps_out_name, *ps_appname, *ps_servername, 
 
 int C74_EXPORT main(void)
 {	
-	void *classex, *jitclass;
-	
-	// initialize our Jitter class
-	jit_gl_syphon_client_init();	
-	
-	// create our Max class
-	setup((t_messlist **)&max_jit_gl_syphon_client_class, 
-		  (method)max_jit_gl_syphon_client_new, (method)max_jit_gl_syphon_client_free, 
-		  (short)sizeof(t_max_jit_gl_syphon_client), 0L, A_GIMME, 0);
-	
-	// specify a byte offset to keep additional information about our object
-	classex = max_jit_classex_setup(calcoffset(t_max_jit_gl_syphon_client, obex));
-	
-	// look up our Jitter class in the class registry
-	jitclass = jit_class_findbyname(gensym("jit_gl_syphon_client"));	
-		
-	// wrap our Jitter class with the standard methods for Jitter objects
-    max_jit_classex_standard_wrap(classex, jitclass, 0); 	
-	
+	t_class *maxclass, *jitclass;
+
+	jit_gl_syphon_client_init();
+
+	maxclass = class_new("jit.gl.syphonclient", (method)max_jit_gl_syphon_client_new, (method)max_jit_gl_syphon_client_free, sizeof(t_max_jit_gl_syphon_client), NULL, A_GIMME, 0);
+	max_jit_class_obex_setup(maxclass, calcoffset(t_max_jit_gl_syphon_client, obex));
+	jitclass = jit_class_findbyname(gensym("jit_gl_syphon_client"));
+
+	max_jit_class_wrap_standard(maxclass, jitclass, 0);
+	max_jit_class_ob3d_wrap(maxclass);
+
 	// custom draw handler so we can output our texture.
 	// override default ob3d bang/draw methods
-	addbang((method)max_jit_gl_syphon_client_bang);
-	max_addmethod_defer_low((method)max_jit_gl_syphon_client_draw, "draw");  
+	class_addmethod(maxclass, (method)max_jit_gl_syphon_client_bang, "bang", 0);
+	max_jit_class_addmethod_defer_low(maxclass, (method)max_jit_gl_syphon_client_draw, "draw");
+	max_jit_class_addmethod_defer_low(maxclass, (method)max_jit_gl_syphon_client_getavailableservers, "getavailableservers");
+
+	class_addmethod(maxclass, (method)max_jit_ob3d_assist, "assist", A_CANT, 0);
+
+	max_jit_gl_syphon_client_class = maxclass;
 	
-    max_addmethod_defer_low((method)max_jit_gl_syphon_client_getavailableservers, "getavailableservers");
-    
-   	// use standard ob3d assist method
-    addmess((method)max_jit_ob3d_assist, "assist", A_CANT,0);  
-	
-	// add methods for 3d drawing
-    max_ob3d_setup();
 	ps_jit_gl_texture = gensym("jit_gl_texture");
 	ps_draw = gensym("draw");
 	ps_out_name = gensym("out_name");
-    ps_servername = gensym("servername");
-    ps_appname = gensym("appname");
-    ps_clear = gensym("clear");
+	ps_servername = gensym("servername");
+	ps_appname = gensym("appname");
+	ps_clear = gensym("clear");
 }
 
 void max_jit_gl_syphon_client_free(t_max_jit_gl_syphon_client *x)
 {
 	max_jit_ob3d_detach(x);
-
-	// lookup our internal Jitter object instance and free
-	if(max_jit_obex_jitob_get(x))
-		jit_object_free(max_jit_obex_jitob_get(x));
-	
-	// free resources associated with our obex entry
-	max_jit_obex_free(x);
+	jit_object_free(max_jit_obex_jitob_get(x));
+	max_jit_object_free(x);
 }
 
 void max_jit_gl_syphon_client_bang(t_max_jit_gl_syphon_client *x)
 {
-//	typedmess((t_object *)x,ps_draw,0,NULL);
-	max_jit_gl_syphon_client_draw(x,ps_draw,0,NULL);
-
+	// ensure we are properly deferred
+	typedmess((t_object *)x,ps_draw,0,NULL);
 }
 
 void max_jit_gl_syphon_client_draw(t_max_jit_gl_syphon_client *x, t_symbol *s, long argc, t_atom *argv)
@@ -164,7 +148,7 @@ void *max_jit_gl_syphon_client_new(t_symbol *s, long argc, t_atom *argv)
 	long attrstart;
 	t_symbol *dest_name_sym = _jit_sym_nothing;
 	
-	if ((x = (t_max_jit_gl_syphon_client *) max_jit_obex_new(max_jit_gl_syphon_client_class, gensym("jit_gl_syphon_client"))))
+	if ((x = (t_max_jit_gl_syphon_client *) max_jit_object_alloc(max_jit_gl_syphon_client_class, gensym("jit_gl_syphon_client"))))
 	{
 		// get first normal arg, the destination name
 		attrstart = max_jit_attr_args_offset(argc,argv);

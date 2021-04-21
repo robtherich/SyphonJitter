@@ -203,11 +203,12 @@ t_jit_gl_syphon_server *jit_gl_syphon_server_new(t_symbol * dest_name)
 			jit_attr_setsym(jit_gl_syphon_server_instance->texture,_jit_sym_name,name);
 			jit_attr_setsym(jit_gl_syphon_server_instance->texture,gensym("defaultimage"),gensym("white"));
 			jit_attr_setlong(jit_gl_syphon_server_instance->texture,gensym("rectangle"), 1);
-			jit_attr_setsym(jit_gl_syphon_server_instance->texture, gensym("mode"),gensym("dynamic"));	
+			//jit_attr_setsym(jit_gl_syphon_server_instance->texture, gensym("mode"),gensym("dynamic"));
 			
 			jit_attr_setsym(jit_gl_syphon_server_instance, ps_texture, name);
 			
 			jit_gl_syphon_server_instance->textureSource = name;
+			jit_attr_setlong(jit_gl_syphon_server_instance, gensym("layer"), JIT_GL_LAYER_LAST+1);
 		} 
 		else
 		{

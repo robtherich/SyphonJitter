@@ -25,7 +25,6 @@
 		1B8F534911CFB5AE009968B9 /* jit.gl.syphonclient.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B8F534811CFB5AE009968B9 /* jit.gl.syphonclient.m */; };
 		1B8F541B11CFCF98009968B9 /* max.jit.gl.syphonclient.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B8F541A11CFCF98009968B9 /* max.jit.gl.syphonclient.m */; };
 		1B8F573111D02E84009968B9 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B8F573011D02E84009968B9 /* Cocoa.framework */; };
-		1B8F574411D02EBD009968B9 /* AGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B8F574311D02EBD009968B9 /* AGL.framework */; };
 		BD48056E1239AC8200DFB19E /* Syphon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD48055A1239AC3700DFB19E /* Syphon.framework */; };
 		BD4805751239AC9100DFB19E /* Syphon.framework in Copy Syphon Framework */ = {isa = PBXBuildFile; fileRef = BD48055A1239AC3700DFB19E /* Syphon.framework */; };
 		BD62E65F12160D8200AC3170 /* SyphonNameboundClient.h in Headers */ = {isa = PBXBuildFile; fileRef = BD62E65D12160D8200AC3170 /* SyphonNameboundClient.h */; };
@@ -78,7 +77,6 @@
 				BD48056E1239AC8200DFB19E /* Syphon.framework in Frameworks */,
 				1B8F532E11CFB4FE009968B9 /* OpenGL.framework in Frameworks */,
 				1B8F573111D02E84009968B9 /* Cocoa.framework in Frameworks */,
-				1B8F574411D02EBD009968B9 /* AGL.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
