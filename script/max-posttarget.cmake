@@ -12,13 +12,8 @@ else ()
 	set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD_REQUIRED ON)
 endif ()
 
-if ("${PROJECT_NAME}" MATCHES ".*_tilde")
-	string(REGEX REPLACE "_tilde" "~" EXTERN_OUTPUT_NAME "${PROJECT_NAME}")
-else ()
-    set(EXTERN_OUTPUT_NAME "${PROJECT_NAME}")
-endif ()
+set(EXTERN_OUTPUT_NAME "${PROJECT_NAME}")
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "${EXTERN_OUTPUT_NAME}")
-
 
 
 ### Output ###
@@ -33,34 +28,6 @@ if (APPLE)
 	set_target_properties(${PROJECT_NAME} PROPERTIES XCODE_ATTRIBUTE_WRAPPER_EXTENSION "mxo")
 	set_target_properties(${PROJECT_NAME} PROPERTIES MACOSX_BUNDLE_BUNDLE_VERSION "${GIT_VERSION_TAG}")
     set_target_properties(${PROJECT_NAME} PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_LIST_DIR}/Info.plist.in)
-elseif (WIN32)
-    if ("${PROJECT_NAME}" MATCHES "_test")
-    else ()
-
-		target_link_libraries(${PROJECT_NAME} PUBLIC ${MaxAPI_LIB})
-		target_link_libraries(${PROJECT_NAME} PUBLIC ${MaxAudio_LIB})
-		target_link_libraries(${PROJECT_NAME} PUBLIC ${Jitter_LIB})
-	endif ()
-	
-	if (CMAKE_SIZEOF_VOID_P EQUAL 8)
-		set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".mxe64")
-	else ()
-		set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".mxe")
-	endif ()
-
-	# warning about constexpr not being const in c++14
-	set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "/wd4814")
-
-	# do not generate ILK files
-	set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/INCREMENTAL:NO")
-
-	if (EXCLUDE_FROM_COLLECTIVES STREQUAL "yes")
-		target_compile_definitions(${PROJECT_NAME} PRIVATE "-DEXCLUDE_FROM_COLLECTIVES")
-	endif()
-
-	if (ADD_VERINFO)
-		target_sources(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_LIST_DIR}/verinfo.rc)
-	endif()
 endif ()
 
 
