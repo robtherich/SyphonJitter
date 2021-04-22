@@ -4,3 +4,5 @@ jit.gl.syphonserver/jit.gl.syphonserver.xcodeproj/project.xcworkspace/xcuserdata
 Jitter.xcworkspace/xcuserdata
 Package/externals
 xcuserdata
+build/*
+*.mxo

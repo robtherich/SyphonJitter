@@ -28,6 +28,7 @@
  */
 
 #include "jit.common.h"
+#include "jit.glext_nv.h"
 #include "jit.gl.h"
 #include "jit.gl.ob3d.h"
 #include "jit.gl.draw.h"
@@ -36,7 +37,7 @@
 #include "ext_preferences.h"
 
 #import <Cocoa/Cocoa.h>
-#import <Syphon/Syphon.h>
+#import "Syphon.h"
 #import "SyphonNameboundClient.h"
 
 t_jit_err jit_ob3d_dest_name_set(t_jit_object *x, void *attr, long argc, t_atom *argv);

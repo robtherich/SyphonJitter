@@ -27,7 +27,9 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <CoreGraphics/CoreGraphics.h>
 #include "jit.common.h"
+#include "jit.glext_nv.h"
 #include "jit.gl.h"
 
 
@@ -58,6 +60,7 @@ int C74_EXPORT main(void)
 	max_jit_class_ob3d_wrap(maxclass);
 	class_addmethod(maxclass, (method)max_jit_ob3d_assist, "assist", A_CANT, 0);
 
+	class_register(CLASS_BOX, maxclass);
 	max_jit_gl_syphon_server_class = maxclass;
 }
 

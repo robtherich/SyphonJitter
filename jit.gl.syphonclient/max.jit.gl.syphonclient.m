@@ -28,9 +28,10 @@
  */
 
 #include "jit.common.h"
+#include "jit.glext_nv.h"
 #include "jit.gl.h"
 
-#import <Syphon/Syphon.h>
+#import "Syphon.h"
 
 typedef struct _max_jit_gl_syphon_client 
 {
@@ -80,6 +81,7 @@ int C74_EXPORT main(void)
 
 	class_addmethod(maxclass, (method)max_jit_ob3d_assist, "assist", A_CANT, 0);
 
+	class_register(CLASS_BOX, maxclass);
 	max_jit_gl_syphon_client_class = maxclass;
 	
 	ps_jit_gl_texture = gensym("jit_gl_texture");

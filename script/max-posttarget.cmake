@@ -23,7 +23,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "${EXTERN_OUTPUT_NA
 
 ### Output ###
 if (APPLE)
-    find_library(JITTER_LIBRARY "JitterAPI" HINTS "${C74_MAX_API_DIR}/lib/mac"  )
+    find_library(JITTER_LIBRARY "JitterAPI" HINTS "${MAX_SDK_JIT_INCLUDES}"  )
     target_link_libraries(${PROJECT_NAME} PUBLIC ${JITTER_LIBRARY})
 	
 	set_property(TARGET ${PROJECT_NAME}
