@@ -45,7 +45,7 @@
 
 #import <Cocoa/Cocoa.h>
 #import <libkern/OSAtomic.h>
-#import <Syphon/Syphon.h>
+#import "Syphon.h"
 
 
 @interface SyphonNameboundClient : NSObject {
