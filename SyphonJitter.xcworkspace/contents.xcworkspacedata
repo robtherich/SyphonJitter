@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:Syphon-Framework/Syphon.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:Server/jit.gl.syphonserver/jit.gl.syphonserver.xcodeproj">
    </FileRef>
    <FileRef

@@ -239,7 +239,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd \"$PROJECT_DIR/../../Syphon-Framework/\"\nxcodebuild -configuration \"$CONFIGURATION\" ARCHS=\"$ARCHS\" VALID_ARCHS=\"$VALID_ARCHS\" OBJROOT=\"${OBJROOT}/DependentBuilds\" SYMROOT=\"$SYMROOT\" GCC_PREPROCESSOR_DEFINITIONS=SYPHON_UNIQUE_CLASS_NAME_PREFIX=SyphonJitterClient\n";
+			shellScript = "cd \"$PROJECT_DIR/../../Syphon-Framework/\"\nxcodebuild -configuration \"$CONFIGURATION\" ARCHS=\"$ARCHS\" VALID_ARCHS=\"$VALID_ARCHS\" OBJROOT=\"$OBJROOT\" SYMROOT=\"$SYMROOT\" GCC_PREPROCESSOR_DEFINITIONS=SYPHON_UNIQUE_CLASS_NAME_PREFIX=SyphonJitterClient\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -269,6 +269,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1B8F52D111CFB3B6009968B9 /* maxmspsdk.xcconfig */;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				DSTROOT = "$(SRCROOT)/../../Package/externals";
@@ -292,6 +293,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1B8F52D111CFB3B6009968B9 /* maxmspsdk.xcconfig */;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DSTROOT = "$(SRCROOT)/../../Package/externals";
