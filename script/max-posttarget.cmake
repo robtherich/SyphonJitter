@@ -1,5 +1,16 @@
-# Copyright 2018 The Max-API Authors. All rights reserved.
-# Use of this source code is governed by the MIT License found in the License.md file.
+set_target_properties(${PROJECT_NAME} PROPERTIES CLANG_ENABLE_OBJC_WEAK "YES")
+set_target_properties(${PROJECT_NAME} PROPERTIES XCODE_ATTRIBUTE_GCC_PREFIX_HEADER "${SYPHON_DIR}/Syphon_Prefix.pch")
+
+target_include_directories(${PROJECT_NAME} PRIVATE ${SYPHON_DIR})
+
+target_link_libraries(${PROJECT_NAME}
+    PRIVATE
+    "-framework Cocoa"
+    "-framework IOSurface"
+    "-framework OpenGL"
+    "-framework CoreGraphics"
+    )
+
 
 if (${C74_CXX_STANDARD} EQUAL 98)
 	if (APPLE)
