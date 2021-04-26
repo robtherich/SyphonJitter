@@ -103,6 +103,9 @@ t_jit_err jit_gl_syphon_client_getattr_out_name(t_jit_gl_syphon_client *jit_gl_s
 // dim
 t_jit_err jit_gl_syphon_client_setattr_dim(t_jit_gl_syphon_client *x, void *attr, long argc, t_atom *argv);
 
+void syphon_client_setservername(t_jit_gl_syphon_client *x);
+void syphon_client_setappname(t_jit_gl_syphon_client *x);
+
 // symbols
 t_symbol *ps_servername;
 t_symbol *ps_appname;
@@ -221,11 +224,9 @@ t_jit_gl_syphon_client *jit_gl_syphon_client_new(t_symbol * dest_name)
 	if ((jit_gl_syphon_client_instance = (t_jit_gl_syphon_client *)jit_object_alloc(_jit_gl_syphon_client_class)))
 	{
 		jit_gl_syphon_client_instance->isGL3 = (preferences_getsym("glengine") == gensym("gl3"));
-		
-		// TODO : is this right ? 
-		// set up attributes
-		jit_attr_setsym(jit_gl_syphon_client_instance->servername, _jit_sym_name, gensym("servername"));
-		jit_attr_setsym(jit_gl_syphon_client_instance->appname, _jit_sym_name, gensym("appname"));
+
+		jit_gl_syphon_client_instance->servername = _jit_sym_nothing;
+		jit_gl_syphon_client_instance->appname = _jit_sym_nothing;
 		
 		jit_gl_syphon_client_instance->needsRedraw = YES;
 		
@@ -528,6 +529,12 @@ t_jit_err jit_gl_syphon_client_draw(t_jit_gl_syphon_client *jit_gl_syphon_client
 	
 	if(!jit_gl_syphon_client_instance->syClient) {
 		jit_gl_syphon_client_instance->syClient = [[SyphonNameboundClient alloc] initWithContext:CGLGetCurrentContext()];
+		if(jit_gl_syphon_client_instance->servername != _jit_sym_nothing) {
+			syphon_client_setservername(jit_gl_syphon_client_instance);
+		}
+		else if(jit_gl_syphon_client_instance->appname != _jit_sym_nothing) {
+			syphon_client_setappname(jit_gl_syphon_client_instance);
+		}
 	}
 	
 	// if we have a client and a frame, render to our internal texture.
@@ -587,60 +594,25 @@ t_jit_err jit_gl_syphon_client_draw(t_jit_gl_syphon_client *jit_gl_syphon_client
 // @serveruuid
 t_jit_err jit_gl_syphon_client_servername(t_jit_gl_syphon_client *jit_gl_syphon_client_instance, void *attr, long argc, t_atom *argv)
 {
-	t_symbol *srvname;
-
-	if(jit_gl_syphon_client_instance)
-	{	
-		if (argc && argv)
-		{
-			srvname = jit_atom_getsym(argv);
-
-			jit_gl_syphon_client_instance->servername = srvname;
-		} 
-		else
-		{
-			// no args, set to zero
-			jit_gl_syphon_client_instance->servername = _jit_sym_nothing;
-		}
-		// if we have a server release it, 
-		// make a new one, with our new UUID.
-		NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
-		[jit_gl_syphon_client_instance->syClient setName:[NSString stringWithCString:jit_gl_syphon_client_instance->servername->s_name
-																			encoding:NSASCIIStringEncoding]];
-		jit_gl_syphon_client_instance->needsRedraw = YES;
-		
-		[pool drain];
+	if (argc && argv) {
+		jit_gl_syphon_client_instance->servername = jit_atom_getsym(argv);
 	}
+	else {
+		jit_gl_syphon_client_instance->servername = _jit_sym_nothing;
+	}
+	syphon_client_setservername(jit_gl_syphon_client_instance);
 	return JIT_ERR_NONE;
 }
 
 t_jit_err jit_gl_syphon_client_appname(t_jit_gl_syphon_client *jit_gl_syphon_client_instance, void *attr, long argc, t_atom *argv)
 {
-	t_symbol *appname;
-	
-	if(jit_gl_syphon_client_instance)
-	{	
-		if (argc && argv)
-		{
-			appname = jit_atom_getsym(argv);
-			
-			jit_gl_syphon_client_instance->appname = appname;
-		} 
-		else
-		{
-			// no args, set to zero
-			jit_gl_syphon_client_instance->appname = _jit_sym_nothing;
-		}
-		// if we have a server release it, 
-		// make a new one, with our new UUID.
-		NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
-		
-		[jit_gl_syphon_client_instance->syClient setAppName:[NSString stringWithCString:jit_gl_syphon_client_instance->appname->s_name
-																				encoding:NSASCIIStringEncoding]];
-		jit_gl_syphon_client_instance->needsRedraw = YES;
-		
-		[pool drain];
+	if (argc && argv) {
+		jit_gl_syphon_client_instance->appname = jit_atom_getsym(argv);
 	}
+	else {
+		jit_gl_syphon_client_instance->appname = _jit_sym_nothing;
+	}
+	syphon_client_setappname(jit_gl_syphon_client_instance);
 	return JIT_ERR_NONE;
 }
 
@@ -700,4 +672,22 @@ t_jit_err jit_gl_syphon_client_setattr_dim(t_jit_gl_syphon_client *jit_gl_syphon
 		return JIT_ERR_NONE;
 	}
 	return JIT_ERR_INVALID_PTR;
+}
+
+void syphon_client_setappname(t_jit_gl_syphon_client *x) {
+	// if we have a server release it,
+	// make a new one, with our new UUID.
+	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
+	[x->syClient setAppName:[NSString stringWithCString:x->appname->s_name encoding:NSASCIIStringEncoding]];
+	x->needsRedraw = YES;
+	[pool drain];
+}
+
+void syphon_client_setservername(t_jit_gl_syphon_client *x) {
+	// if we have a server release it,
+	// make a new one, with our new UUID.
+	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
+	[x->syClient setName:[NSString stringWithCString:x->servername->s_name encoding:NSASCIIStringEncoding]];
+	x->needsRedraw = YES;
+	[pool drain];
 }
