@@ -190,9 +190,7 @@ t_jit_gl_syphon_server *jit_gl_syphon_server_new(t_symbol * dest_name)
 		// create and attach ob3d
 		jit_ob3d_new(jit_gl_syphon_server_instance, dest_name);
 
-		// TODO : is this right ? 
-		// set up attributes
-		jit_attr_setsym(jit_gl_syphon_server_instance->servername, _jit_sym_name, gensym("servername"));
+		jit_gl_syphon_server_instance->servername = _jit_sym_nothing;
 
 		// instantiate a single internal jit.gl.texture should we need it.
 		jit_gl_syphon_server_instance->texture = jit_object_new(ps_jit_gl_texture,jit_attr_getsym(jit_gl_syphon_server_instance,ps_drawto));
@@ -408,29 +406,24 @@ t_jit_err jit_gl_syphon_server_draw(t_jit_gl_syphon_server *jit_gl_syphon_server
 // @servername
 t_jit_err jit_gl_syphon_server_servername(t_jit_gl_syphon_server *jit_gl_syphon_server_instance, void *attr, long argc, t_atom *argv)
 {
-	t_symbol *srvname;
-
-	if(jit_gl_syphon_server_instance && jit_gl_syphon_server_instance->syServer)
-	{	
-		//post("have server");
-
+	if(jit_gl_syphon_server_instance)
+	{
 		if (argc && argv)
 		{
-			srvname = jit_atom_getsym(argv);
-
-			jit_gl_syphon_server_instance->servername = srvname;
+			jit_gl_syphon_server_instance->servername = jit_atom_getsym(argv);
 		} 
 		else
 		{
-			// no args, set to zero
-			jit_gl_syphon_server_instance->servername = gensym("jit.gl.syphonserver");
+			jit_gl_syphon_server_instance->servername = _jit_sym_nothing;
 		}
 		
 		// set the servers name to 
-		// get our name and set it 
-		[jit_gl_syphon_server_instance->syServer setName:[NSString stringWithCString:jit_gl_syphon_server_instance->servername->s_name
-																			encoding:NSASCIIStringEncoding]];
-		
+		// get our name and set it
+		if(jit_gl_syphon_server_instance->syServer )
+		{
+			[jit_gl_syphon_server_instance->syServer setName:[NSString stringWithCString:jit_gl_syphon_server_instance->servername->s_name
+																				encoding:NSASCIIStringEncoding]];
+		}
 	}
 	return JIT_ERR_NONE;
 }
