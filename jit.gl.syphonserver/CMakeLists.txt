@@ -4,6 +4,7 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/../script/max-pretarget.cmake)
 include_directories( 
 	"${MAX_SDK_INCLUDES}"
 	"${MAX_SDK_JIT_INCLUDES}"
+	"${SYPHON_DIR}"
 )
 
 add_library( 
