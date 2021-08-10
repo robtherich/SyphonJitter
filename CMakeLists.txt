@@ -1,20 +1,17 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.19)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-set(CMAKE_CXX_STANDARD 14)    # note: on linux we need c++17
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF) # for clang, gcc, this should use -std=gnu++11 instead of -std=c++11
-set(CMAKE_VISIBILITY_INLINES_HIDDEN ON)
-set(CMAKE_OPTIMIZE_DEPENDENCIES ON) # streamline static library dependencies
-
-enable_language(OBJC OBJCXX)
-
 set(CMAKE_XCODE_GENERATE_SCHEME ON)
 set(CMAKE_SUPPRESS_REGENERATION ON)
 
-set(C74_SCRIPT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/max-sdk/source/script")
+set(CMAKE_OSX_ARCHITECTURES x86_64;arm64)
 
-project(SyphonJitter VERSION 1.0.7 LANGUAGES C OBJC OBJCXX)
+set(C74_SCRIPT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/max-sdk-base/script")
+
+project(SyphonJitter VERSION 1.0.8 LANGUAGES C OBJC)
+# needs to come after project declearation
+enable_language(OBJC)
+
 set(SYPHON_SHARED_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Shared")
 set(SYPHON_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Syphon-Framework")
 set(SYPHON_SRC

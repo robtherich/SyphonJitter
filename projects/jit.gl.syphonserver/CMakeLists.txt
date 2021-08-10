@@ -1,4 +1,3 @@
-cmake_minimum_required(VERSION 3.0)
 include(${C74_SCRIPT_DIR}/max-pretarget.cmake)
 
 # overwrite from sdk scripts

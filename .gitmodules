@@ -1,6 +1,6 @@
 [submodule "Syphon-Framework"]
 	path = Syphon-Framework
 	url = https://github.com/Syphon/Syphon-Framework.git
-[submodule "max-sdk"]
-	path = max-sdk
-	url=https://github.com/Cycling74/max-sdk.git
+[submodule "max-sdk-base"]
+	path = max-sdk-base
+	url = https://github.com/Cycling74/max-sdk-base
