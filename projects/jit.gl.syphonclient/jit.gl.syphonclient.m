@@ -305,13 +305,15 @@ t_jit_err jit_gl_syphon_client_dest_changed(t_jit_gl_syphon_client *jit_gl_sypho
 		t_symbol *context = jit_attr_getsym(jit_gl_syphon_client_instance,ps_drawto);
 		jit_attr_setsym(jit_gl_syphon_client_instance->output,ps_drawto,context);
 		
-		// our texture has to be bound in the new context before we can use it
-		// http://cycling74.com/forums/topic.php?id=29197
-		t_jit_gl_drawinfo drawInfo;
-		t_symbol *texName = jit_attr_getsym(jit_gl_syphon_client_instance->output, gensym("name"));
-		jit_gl_drawinfo_setup(jit_gl_syphon_client_instance, &drawInfo);
-		jit_gl_bindtexture(&drawInfo, texName, 0);
-		jit_gl_unbindtexture(&drawInfo, texName, 0);
+		if(!jit_gl_syphon_client_instance->isGL3) {
+			// our texture has to be bound in the new context before we can use it
+			// http://cycling74.com/forums/topic.php?id=29197
+			t_jit_gl_drawinfo drawInfo;
+			t_symbol *texName = jit_attr_getsym(jit_gl_syphon_client_instance->output, gensym("name"));
+			jit_gl_drawinfo_setup(jit_gl_syphon_client_instance, &drawInfo);
+			jit_gl_bindtexture(&drawInfo, texName, 0);
+			jit_gl_unbindtexture(&drawInfo, texName, 0);
+		}
 		
 		if(jit_gl_syphon_client_instance->geometry)
 			jit_object_free(jit_gl_syphon_client_instance->geometry);
