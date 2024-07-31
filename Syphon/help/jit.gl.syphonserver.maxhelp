@@ -2,16 +2,16 @@
 	"patcher" : 	{
 		"fileversion" : 1,
 		"appversion" : 		{
-			"major" : 7,
-			"minor" : 3,
-			"revision" : 4,
-			"architecture" : "x86",
+			"major" : 9,
+			"minor" : 0,
+			"revision" : 0,
+			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 973.0, 78.0, 809.0, 722.0 ],
-		"bgcolor" : [ 0.333333, 0.333333, 0.333333, 1.0 ],
-		"bglocked" : 0,
+		"classnamespace" : "box",
+		"rect" : [ 134.0, 172.0, 809.0, 722.0 ],
+		"bglocked" : 1,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
 		"default_fontface" : 0,
@@ -37,34 +37,144 @@
 		"tags" : "",
 		"style" : "",
 		"subpatcher_template" : "",
+		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
+					"bubble" : 1,
+					"bubblepoint" : 0.25,
 					"fontname" : "Arial",
 					"fontsize" : 12.0,
-					"id" : "obj-1",
-					"maxclass" : "number",
-					"maximum" : 1000,
-					"minimum" : 2,
+					"id" : "obj-94",
+					"linecount" : 4,
+					"maxclass" : "comment",
 					"numinlets" : 1,
-					"numoutlets" : 2,
-					"outlettype" : [ "", "bang" ],
-					"parameter_enable" : 0,
-					"patching_rect" : [ 159.0, 195.0, 50.0, 22.0 ],
-					"style" : ""
+					"numoutlets" : 0,
+					"patching_rect" : [ 454.0, 293.0, 192.0, 64.0 ],
+					"presentation_linecount" : 4,
+					"text" : "If you're using Syphon to record video, make sure @dim matches your desired video resolution."
 				}
 
 			}
 , 			{
 				"box" : 				{
+					"bubble" : 1,
 					"fontname" : "Arial",
 					"fontsize" : 12.0,
-					"id" : "obj-9",
-					"linecount" : 2,
+					"id" : "obj-93",
+					"linecount" : 3,
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 306.0, 532.0, 363.0, 33.0 ],
-					"style" : "",
+					"patching_rect" : [ 574.0, 458.0, 188.0, 51.0 ],
+					"presentation_linecount" : 7,
+					"text" : "Be sure to include a camera, so the viewport is independent of the window size."
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-92",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 2,
+					"outlettype" : [ "jit_gl_texture", "" ],
+					"patching_rect" : [ 493.0, 473.0, 73.0, 22.0 ],
+					"text" : "jit.gl.camera"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-90",
+					"maxclass" : "toggle",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "int" ],
+					"parameter_enable" : 1,
+					"patching_rect" : [ 60.0, 197.0, 24.0, 24.0 ],
+					"saved_attribute_attributes" : 					{
+						"valueof" : 						{
+							"parameter_enum" : [ "off", "on" ],
+							"parameter_initial" : [ 1.0 ],
+							"parameter_initial_enable" : 1,
+							"parameter_longname" : "toggle",
+							"parameter_mmax" : 1,
+							"parameter_modmode" : 0,
+							"parameter_shortname" : "toggle",
+							"parameter_type" : 2
+						}
+
+					}
+,
+					"varname" : "toggle"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"fontface" : 0,
+					"fontname" : "Arial",
+					"fontsize" : 12.0,
+					"id" : "obj-88",
+					"maxclass" : "jit.fpsgui",
+					"numinlets" : 1,
+					"numoutlets" : 2,
+					"outlettype" : [ "", "" ],
+					"patching_rect" : [ 85.0, 349.0, 80.0, 35.0 ]
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-87",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 2,
+					"outlettype" : [ "jit_matrix", "" ],
+					"patching_rect" : [ 189.0, 475.0, 135.0, 22.0 ],
+					"text" : "jit.gl.layer servercontext"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"attr" : "fps",
+					"id" : "obj-86",
+					"maxclass" : "attrui",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"parameter_enable" : 0,
+					"patching_rect" : [ 129.0, 227.0, 86.0, 22.0 ],
+					"text_width" : 44.0
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-84",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 3,
+					"outlettype" : [ "jit_gl_texture", "bang", "" ],
+					"patching_rect" : [ 60.0, 299.0, 381.0, 22.0 ],
+					"text" : "jit.world servercontext @visible 0 @output_texture 1 @dim 1920 1080"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"bubble" : 1,
+					"bubblepoint" : 0.25,
+					"bubbleside" : 0,
+					"fontname" : "Arial",
+					"fontsize" : 12.0,
+					"id" : "obj-9",
+					"linecount" : 4,
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 256.0, 332.0, 192.0, 79.0 ],
 					"text" : "Syphon does not rely on screen capture, so you can minimize and hide source windows and applications, and frames still flow."
 				}
 
@@ -78,8 +188,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 277.0, 570.0, 61.0, 22.0 ],
-					"style" : "",
+					"patching_rect" : [ 97.0, 198.0, 61.0, 22.0 ],
 					"text" : "visible $1"
 				}
 
@@ -92,8 +201,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "int" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 277.0, 542.0, 20.0, 20.0 ],
-					"style" : ""
+					"patching_rect" : [ 97.0, 170.0, 20.0, 20.0 ]
 				}
 
 			}
@@ -106,37 +214,38 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 264.0, 417.0, 165.0, 22.0 ],
-					"style" : "",
+					"patching_rect" : [ 196.0, 605.0, 165.0, 22.0 ],
 					"text" : "servername \"Syphon Server\""
 				}
 
 			}
 , 			{
 				"box" : 				{
+					"bubble" : 1,
 					"fontname" : "Arial",
 					"fontsize" : 12.0,
 					"id" : "obj-2",
+					"linecount" : 2,
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 413.0, 321.0, 147.0, 20.0 ],
-					"style" : "",
+					"patching_rect" : [ 336.0, 467.5, 112.0, 37.0 ],
 					"text" : "Just for display purposes."
 				}
 
 			}
 , 			{
 				"box" : 				{
+					"bubble" : 1,
+					"bubblepoint" : 0.8,
 					"fontname" : "Arial",
 					"fontsize" : 12.0,
 					"id" : "obj-83",
-					"linecount" : 4,
+					"linecount" : 5,
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 217.0, 185.0, 314.0, 60.0 ],
-					"style" : "",
+					"patching_rect" : [ 222.0, 179.0, 314.0, 78.0 ],
 					"text" : "Note that the framerate you drive your jit.gl.syphonserver instance also controls the rendering speed of the attached clients. Lowering your framerate is beneficial to the whole system, as clients slow down as well."
 				}
 
@@ -149,23 +258,23 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 154.0, 387.0, 271.0, 20.0 ],
-					"style" : "",
+					"patching_rect" : [ 86.0, 575.0, 271.0, 20.0 ],
 					"text" : "Change the human readable name for the frame."
 				}
 
 			}
 , 			{
 				"box" : 				{
+					"bubble" : 1,
 					"fontname" : "Arial",
 					"fontsize" : 12.0,
 					"id" : "obj-76",
+					"linecount" : 2,
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 268.0, 278.0, 384.0, 20.0 ],
-					"style" : "",
-					"text" : "Create a matrix (you can also send the output of a jit.gl.texture object)."
+					"patching_rect" : [ 83.0, 525.0, 384.0, 37.0 ],
+					"text" : "Capture the output of jit.world as a texture and send it out with jit.gl.syphonserver (you can also send a matrix). "
 				}
 
 			}
@@ -178,8 +287,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 151.0, 417.0, 103.0, 22.0 ],
-					"style" : "",
+					"patching_rect" : [ 83.0, 605.0, 103.0, 22.0 ],
 					"text" : "servername Jitter"
 				}
 
@@ -193,9 +301,8 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "jit_matrix", "" ],
-					"patching_rect" : [ 128.0, 278.0, 135.0, 22.0 ],
-					"style" : "",
-					"text" : "jit.noise 1 char 640 480"
+					"patching_rect" : [ 189.0, 432.0, 133.0, 22.0 ],
+					"text" : "jit.noise 1 char 960 540"
 				}
 
 			}
@@ -207,8 +314,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 680.0, 636.20929, 116.0, 20.0 ],
-					"style" : "",
+					"patching_rect" : [ 680.0, 636.20929000000001, 116.0, 20.0 ],
 					"text" : "jit.gl.syphonserver 4"
 				}
 
@@ -222,7 +328,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 499.0, 693.0, 297.0, 20.0 ],
-					"style" : "",
 					"text" : "Copyright Tom Butterworth & Anton Marini, 2010-2017"
 				}
 
@@ -237,7 +342,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 30.0, 30.0, 255.0, 33.0 ],
-					"style" : "",
 					"text" : "jit.gl.syphonserver"
 				}
 
@@ -250,8 +354,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 674.708984, 674.069763, 121.0, 20.0 ],
-					"style" : "",
+					"patching_rect" : [ 674.708983999999987, 674.069762999999966, 121.0, 20.0 ],
 					"text" : "Licensed under BSD"
 				}
 
@@ -264,24 +367,8 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 665.0, 655.139526, 131.0, 20.0 ],
-					"style" : "",
+					"patching_rect" : [ 665.0, 655.139526000000046, 131.0, 20.0 ],
 					"text" : "http://syphon.v002.info"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"fontface" : 0,
-					"fontname" : "Arial",
-					"fontsize" : 12.0,
-					"id" : "obj-21",
-					"maxclass" : "jit.fpsgui",
-					"numinlets" : 1,
-					"numoutlets" : 2,
-					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 113.0, 600.0, 80.0, 35.0 ],
-					"style" : ""
 				}
 
 			}
@@ -295,123 +382,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 30.0, 75.0, 506.0, 87.0 ],
-					"style" : "",
 					"text" : "jit.gl.syphonserver publishes a jit.matrix or a jit.gl.texture to the system, which other Syphon Clients can then discover and display. Frames published by  jit.gl.syphonserver handle 32 bit ARGB images, (8 bits per channel) and properly respect alpha channel, so you can publish images with transparency/masks and keys applied with no issue. jit.gl.syphonserver's only configurable message is the servername message which is a descriptive human readable name describing the frame."
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"fontname" : "Arial",
-					"fontsize" : 12.0,
-					"id" : "obj-67",
-					"maxclass" : "newobj",
-					"numinlets" : 1,
-					"numoutlets" : 2,
-					"outlettype" : [ "erase", "bang" ],
-					"patching_rect" : [ 113.0, 539.0, 57.0, 22.0 ],
-					"style" : "",
-					"text" : "t erase b"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"id" : "obj-68",
-					"maxclass" : "button",
-					"numinlets" : 1,
-					"numoutlets" : 1,
-					"outlettype" : [ "bang" ],
-					"patching_rect" : [ 75.0, 195.0, 20.0, 20.0 ],
-					"style" : ""
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"fontname" : "Arial",
-					"fontsize" : 12.0,
-					"id" : "obj-69",
-					"maxclass" : "newobj",
-					"numinlets" : 1,
-					"numoutlets" : 2,
-					"outlettype" : [ "jit_matrix", "" ],
-					"patching_rect" : [ 146.0, 321.0, 266.0, 22.0 ],
-					"style" : "",
-					"text" : "jit.gl.videoplane servercontext @blend_enable 1"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"fontname" : "Arial",
-					"fontsize" : 12.0,
-					"id" : "obj-70",
-					"maxclass" : "newobj",
-					"numinlets" : 1,
-					"numoutlets" : 2,
-					"outlettype" : [ "bang", "bang" ],
-					"patching_rect" : [ 113.0, 253.500015, 34.0, 22.0 ],
-					"style" : "",
-					"text" : "t b b"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"id" : "obj-71",
-					"maxclass" : "toggle",
-					"numinlets" : 1,
-					"numoutlets" : 1,
-					"outlettype" : [ "int" ],
-					"parameter_enable" : 0,
-					"patching_rect" : [ 113.0, 195.0, 20.0, 20.0 ],
-					"style" : ""
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"fontname" : "Arial",
-					"fontsize" : 12.0,
-					"id" : "obj-72",
-					"maxclass" : "newobj",
-					"numinlets" : 1,
-					"numoutlets" : 2,
-					"outlettype" : [ "bang", "" ],
-					"patching_rect" : [ 113.0, 570.0, 145.0, 22.0 ],
-					"style" : "",
-					"text" : "jit.gl.render servercontext"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"fontname" : "Arial",
-					"fontsize" : 12.0,
-					"id" : "obj-73",
-					"maxclass" : "newobj",
-					"numinlets" : 2,
-					"numoutlets" : 1,
-					"outlettype" : [ "bang" ],
-					"patching_rect" : [ 113.0, 222.411484, 65.0, 22.0 ],
-					"style" : "",
-					"text" : "qmetro 16"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"fontname" : "Arial",
-					"fontsize" : 12.0,
-					"id" : "obj-74",
-					"maxclass" : "newobj",
-					"numinlets" : 1,
-					"numoutlets" : 2,
-					"outlettype" : [ "bang", "" ],
-					"patching_rect" : [ 277.0, 595.0, 197.0, 22.0 ],
-					"style" : "",
-					"text" : "jit.window servercontext @visible 0"
 				}
 
 			}
@@ -425,9 +396,8 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 128.0, 460.0, 107.0, 22.0 ],
-					"style" : "",
-					"text" : "jit.gl.syphonserver"
+					"patching_rect" : [ 60.0, 648.0, 351.0, 22.0 ],
+					"text" : "jit.gl.syphonserver servercontext @servername \"Syphon Server\""
 				}
 
 			}
@@ -456,23 +426,15 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 15.0, 15.0, 781.0, 698.0 ],
-					"proportion" : 0.39,
-					"style" : ""
+					"proportion" : 0.39
 				}
 
 			}
  ],
 		"lines" : [ 			{
 				"patchline" : 				{
-					"destination" : [ "obj-73", 1 ],
-					"source" : [ "obj-1", 0 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
 					"destination" : [ "obj-75", 0 ],
-					"midpoints" : [ 273.5, 447.0, 137.5, 447.0 ],
+					"midpoints" : [ 205.5, 635.0, 69.5, 635.0 ],
 					"source" : [ "obj-3", 0 ]
 				}
 
@@ -486,80 +448,22 @@
 			}
 , 			{
 				"patchline" : 				{
-					"destination" : [ "obj-72", 0 ],
-					"source" : [ "obj-67", 1 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
-					"destination" : [ "obj-72", 0 ],
-					"source" : [ "obj-67", 0 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
-					"destination" : [ "obj-70", 0 ],
-					"source" : [ "obj-68", 0 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
-					"destination" : [ "obj-74", 0 ],
+					"destination" : [ "obj-84", 0 ],
 					"source" : [ "obj-7", 0 ]
 				}
 
 			}
 , 			{
 				"patchline" : 				{
-					"destination" : [ "obj-67", 0 ],
-					"source" : [ "obj-70", 0 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
-					"destination" : [ "obj-80", 0 ],
-					"source" : [ "obj-70", 1 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
-					"destination" : [ "obj-73", 0 ],
-					"source" : [ "obj-71", 0 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
-					"destination" : [ "obj-21", 0 ],
-					"source" : [ "obj-72", 0 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
-					"destination" : [ "obj-70", 0 ],
-					"source" : [ "obj-73", 0 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
 					"destination" : [ "obj-75", 0 ],
-					"midpoints" : [ 160.5, 447.0, 137.5, 447.0 ],
+					"midpoints" : [ 92.5, 635.0, 69.5, 635.0 ],
 					"source" : [ "obj-77", 0 ]
 				}
 
 			}
 , 			{
 				"patchline" : 				{
-					"destination" : [ "obj-69", 0 ],
-					"midpoints" : [ 137.5, 312.5, 155.5, 312.5 ],
-					"order" : 0,
+					"destination" : [ "obj-87", 0 ],
 					"source" : [ "obj-80", 0 ]
 				}
 
@@ -567,19 +471,63 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-75", 0 ],
-					"midpoints" : [ 137.5, 309.5, 137.5, 309.5 ],
 					"order" : 1,
-					"source" : [ "obj-80", 0 ]
+					"source" : [ "obj-84", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-80", 0 ],
+					"source" : [ "obj-84", 1 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-88", 0 ],
+					"order" : 0,
+					"source" : [ "obj-84", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-84", 0 ],
+					"source" : [ "obj-86", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-84", 0 ],
+					"source" : [ "obj-90", 0 ]
 				}
 
 			}
  ],
+		"originid" : "pat-2",
+		"parameters" : 		{
+			"obj-90" : [ "toggle", "toggle", 0 ],
+			"parameterbanks" : 			{
+				"0" : 				{
+					"index" : 0,
+					"name" : "",
+					"parameters" : [ "-", "-", "-", "-", "-", "-", "-", "-" ]
+				}
+
+			}
+,
+			"inherited_shortname" : 1
+		}
+,
 		"dependency_cache" : [ 			{
 				"name" : "jit.gl.syphonserver.mxo",
 				"type" : "iLaX"
 			}
  ],
-		"autosave" : 0
+		"autosave" : 0,
+		"bgcolor" : [ 0.333333, 0.333333, 0.333333, 1.0 ]
 	}
 
 }

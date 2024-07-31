@@ -6,3 +6,4 @@ Package/externals
 xcuserdata
 build/*
 *.mxo
+.DS_Store
