@@ -4,40 +4,14 @@
 		"appversion" : 		{
 			"major" : 9,
 			"minor" : 0,
-			"revision" : 0,
+			"revision" : 3,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
 		"classnamespace" : "box",
 		"rect" : [ 134.0, 172.0, 809.0, 722.0 ],
-		"bglocked" : 1,
-		"openinpresentation" : 0,
-		"default_fontsize" : 12.0,
-		"default_fontface" : 0,
-		"default_fontname" : "Arial",
-		"gridonopen" : 1,
 		"gridsize" : [ 15.0, 15.0 ],
-		"gridsnaponopen" : 1,
-		"objectsnaponopen" : 1,
-		"statusbarvisible" : 2,
-		"toolbarvisible" : 1,
-		"lefttoolbarpinned" : 0,
-		"toptoolbarpinned" : 0,
-		"righttoolbarpinned" : 0,
-		"bottomtoolbarpinned" : 0,
-		"toolbars_unpinned_last_save" : 0,
-		"tallnewobj" : 0,
-		"boxanimatetime" : 200,
-		"enablehscroll" : 1,
-		"enablevscroll" : 1,
-		"devicewidth" : 0.0,
-		"description" : "",
-		"digest" : "",
-		"tags" : "",
-		"style" : "",
-		"subpatcher_template" : "",
-		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
 					"bubble" : 1,
@@ -50,7 +24,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 454.0, 293.0, 192.0, 64.0 ],
-					"presentation_linecount" : 4,
 					"text" : "If you're using Syphon to record video, make sure @dim matches your desired video resolution."
 				}
 
@@ -65,8 +38,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 574.0, 458.0, 188.0, 51.0 ],
-					"presentation_linecount" : 7,
+					"patching_rect" : [ 574.0, 458.0, 191.0, 51.0 ],
 					"text" : "Be sure to include a camera, so the viewport is independent of the window size."
 				}
 
@@ -100,12 +72,14 @@
 							"parameter_longname" : "toggle",
 							"parameter_mmax" : 1,
 							"parameter_modmode" : 0,
+							"parameter_osc_name" : "<default>",
 							"parameter_shortname" : "toggle",
 							"parameter_type" : 2
 						}
 
 					}
 ,
+					"svg" : "",
 					"varname" : "toggle"
 				}
 
@@ -174,7 +148,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 256.0, 332.0, 192.0, 79.0 ],
+					"patching_rect" : [ 256.0, 332.0, 193.0, 79.0 ],
 					"text" : "Syphon does not rely on screen capture, so you can minimize and hide source windows and applications, and frames still flow."
 				}
 
@@ -201,7 +175,8 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "int" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 97.0, 170.0, 20.0, 20.0 ]
+					"patching_rect" : [ 97.0, 170.0, 20.0, 20.0 ],
+					"svg" : ""
 				}
 
 			}
@@ -245,7 +220,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 222.0, 179.0, 314.0, 78.0 ],
+					"patching_rect" : [ 222.0, 179.0, 318.0, 78.0 ],
 					"text" : "Note that the framerate you drive your jit.gl.syphonserver instance also controls the rendering speed of the attached clients. Lowering your framerate is beneficial to the whole system, as clients slow down as well."
 				}
 
@@ -415,21 +390,6 @@
 				}
 
 			}
-, 			{
-				"box" : 				{
-					"angle" : 0.0,
-					"background" : 1,
-					"bgcolor" : [ 0.952941, 0.952941, 0.94902, 1.0 ],
-					"id" : "obj-33",
-					"maxclass" : "panel",
-					"mode" : 0,
-					"numinlets" : 1,
-					"numoutlets" : 0,
-					"patching_rect" : [ 15.0, 15.0, 781.0, 698.0 ],
-					"proportion" : 0.39
-				}
-
-			}
  ],
 		"lines" : [ 			{
 				"patchline" : 				{
@@ -506,7 +466,7 @@
 
 			}
  ],
-		"originid" : "pat-2",
+		"originid" : "pat-17",
 		"parameters" : 		{
 			"obj-90" : [ "toggle", "toggle", 0 ],
 			"parameterbanks" : 			{
@@ -526,8 +486,7 @@
 				"type" : "iLaX"
 			}
  ],
-		"autosave" : 0,
-		"bgcolor" : [ 0.333333, 0.333333, 0.333333, 1.0 ]
+		"autosave" : 0
 	}
 
 }

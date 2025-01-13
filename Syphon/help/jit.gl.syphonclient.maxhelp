@@ -4,40 +4,14 @@
 		"appversion" : 		{
 			"major" : 9,
 			"minor" : 0,
-			"revision" : 0,
+			"revision" : 3,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 783.0, 278.0, 809.0, 722.0 ],
-		"bglocked" : 1,
-		"openinpresentation" : 0,
-		"default_fontsize" : 12.0,
-		"default_fontface" : 0,
-		"default_fontname" : "Arial",
-		"gridonopen" : 1,
+		"rect" : [ 287.0, 87.0, 809.0, 722.0 ],
 		"gridsize" : [ 15.0, 15.0 ],
-		"gridsnaponopen" : 1,
-		"objectsnaponopen" : 1,
-		"statusbarvisible" : 2,
-		"toolbarvisible" : 1,
-		"lefttoolbarpinned" : 0,
-		"toptoolbarpinned" : 0,
-		"righttoolbarpinned" : 0,
-		"bottomtoolbarpinned" : 0,
-		"toolbars_unpinned_last_save" : 0,
-		"tallnewobj" : 0,
-		"boxanimatetime" : 200,
-		"enablehscroll" : 1,
-		"enablevscroll" : 1,
-		"devicewidth" : 0.0,
-		"description" : "",
-		"digest" : "",
-		"tags" : "",
-		"style" : "",
-		"subpatcher_template" : "",
-		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
 					"id" : "obj-44",
@@ -67,12 +41,14 @@
 							"parameter_longname" : "toggle",
 							"parameter_mmax" : 1,
 							"parameter_modmode" : 0,
+							"parameter_osc_name" : "<default>",
 							"parameter_shortname" : "toggle",
 							"parameter_type" : 2
 						}
 
 					}
 ,
+					"svg" : "",
 					"varname" : "toggle"
 				}
 
@@ -287,7 +263,7 @@
 				"box" : 				{
 					"allowdrag" : 0,
 					"id" : "obj-16",
-					"items" : "Max",
+					"items" : "<empty>",
 					"maxclass" : "umenu",
 					"numinlets" : 1,
 					"numoutlets" : 3,
@@ -315,7 +291,7 @@
 				"box" : 				{
 					"allowdrag" : 0,
 					"id" : "obj-11",
-					"items" : "Syphon Server",
+					"items" : "<empty>",
 					"maxclass" : "umenu",
 					"numinlets" : 1,
 					"numoutlets" : 3,
@@ -434,21 +410,6 @@
 					"outlettype" : [ "jit_matrix" ],
 					"patching_rect" : [ 542.0, 15.0, 256.0, 253.0 ],
 					"pic" : "syphon_client_help_image.png"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"angle" : 0.0,
-					"background" : 1,
-					"bgcolor" : [ 0.952941, 0.952941, 0.94902, 1.0 ],
-					"id" : "obj-33",
-					"maxclass" : "panel",
-					"mode" : 0,
-					"numinlets" : 1,
-					"numoutlets" : 0,
-					"patching_rect" : [ 16.375671000000001, 15.0, 783.0, 702.0 ],
-					"proportion" : 0.39
 				}
 
 			}
@@ -656,7 +617,7 @@
 
 			}
  ],
-		"originid" : "pat-30",
+		"originid" : "pat-9",
 		"parameters" : 		{
 			"obj-43" : [ "toggle", "toggle", 0 ],
 			"parameterbanks" : 			{
@@ -676,8 +637,7 @@
 				"type" : "iLaX"
 			}
  ],
-		"autosave" : 0,
-		"bgcolor" : [ 0.333333, 0.333333, 0.333333, 1.0 ]
+		"autosave" : 0
 	}
 
 }
