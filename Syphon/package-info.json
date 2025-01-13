@@ -1,7 +1,7 @@
 {
 	"name" : "Syphon",
 	"displayname" : "",
-	"version" : "1.0.8",
+	"version" : "1.0.10",
 	"author" : "Tom Butterworth, Anton Marini",
 	"authors" : [  ],
 	"description" : "Jitter externals for sharing OpenGL textures with Syphon enabled applications. Mac only, for similar functionality on Windows, check out the Spout package.",
@@ -14,7 +14,7 @@
 	"os" : 	{
 		"macintosh" : 		{
 			"min_version" : "10.11.x",
-			"platform" : [ "x64" ]
+			"platform" : [ "x64", "aarch64" ]
 		}
 ,
 		"windows" : 		{
@@ -24,9 +24,10 @@
 
 	}
 ,
-	"homepatcher" : null,
+	"homepatcher" : "Syphon.maxpat",
 	"filelist" : 	{
 		"externals" : [ "jit.gl.syphonclient.mxo", "jit.gl.syphonserver.mxo" ],
-		"help" : [ "jit.gl.syphonclient.maxhelp", "jit.gl.syphonserver.maxhelp" ]
+		"help" : [ "jit.gl.syphonclient.maxhelp", "jit.gl.syphonserver.maxhelp" ],
+		"extras" : [ "Syphon.maxpat" ]
 	}
 }
