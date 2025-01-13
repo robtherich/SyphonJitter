@@ -382,12 +382,17 @@ t_jit_err jit_gl_syphon_server_draw(t_jit_gl_syphon_server *jit_gl_syphon_server
 				NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
 				
 				// output our frame
+                GLint prevvp[4];
+                glGetIntegerv(GL_VIEWPORT, prevvp);
+
 				[jit_gl_syphon_server_instance->syServer publishFrameTexture:texName
 															   textureTarget:texTarget
 																 imageRegion:NSMakeRect(0.0, 0.0, width, height)
 														   textureDimensions:NSMakeSize(width, height)
 																	 flipped:flip];
 				[pool drain];
+                
+                glViewport(prevvp[0], prevvp[1], prevvp[2], prevvp[3]);
 			}
 		}
 	}
